@@ -1,4 +1,4 @@
-const CACHE="reostato-1-rama-1iny-uni-v1";
+const CACHE="reostato-1-rama-1iny-uni-v2";
 const ASSETS=["./","index.html","styles.css","model.js","app.js","manifest.webmanifest","favicon.svg","icon-192.svg","icon-512.svg"];
 self.addEventListener("install",event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting())));
 self.addEventListener("activate",event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
