@@ -1,0 +1,13 @@
+const assert=require("node:assert/strict"),fs=require("node:fs"),path=require("node:path");
+const root=path.resolve(__dirname,"../docs"),html=fs.readFileSync(path.join(root,"index.html"),"utf8"),app=fs.readFileSync(path.join(root,"app.js"),"utf8"),css=fs.readFileSync(path.join(root,"styles.css"),"utf8");
+for(const file of ["styles.css","model.js","app.js","manifest.webmanifest","favicon.svg","icon-192.svg","icon-512.svg","sw.js"])assert.ok(fs.existsSync(path.join(root,file)),`${file} ausente`);
+for(const id of ["nom-va","nom-vb","rca","rcb","nom-i11","nom-i12","live-v","live-rc1","assist","calculate-fixed","res-it","res-v1","res-dv1","single-line-diagram","diag-v","diag-it","diag-v1","diag-r11","diag-r12","diag-reo11","diag-reo12","diag-i11","diag-i12"])assert.ok(html.includes(`id="${id}"`),`${id} ausente`);
+for(const id of ["nom-va","nom-vb","rca","rcb","nom-i11","nom-i12","live-v","live-rc1"])assert.match(html,new RegExp(`id="${id}"[^>]*step="0\\.01"`),`${id} debe variar en centésimas`);
+assert.ok(html.includes('class="measurement-card side-a"'));assert.ok(html.includes('class="measurement-card side-b"'));assert.ok(html.includes('class="branches two-branches"'));
+assert.ok(html.includes('<svg class="single-line-svg schematic-svg"'));assert.ok(!html.includes('type="range"'));
+assert.ok(app.includes('const ids=["11","12"]'));assert.ok(app.includes('id="system-r-${id}"'));assert.ok(app.includes('id="reo-power-${id}"'));assert.ok(app.includes("o.currents[id]**2*o.rheostats[id]"));assert.ok(app.includes('calculate_two_injection_resistances'));
+assert.ok(app.includes("function renderDiagram"));assert.ok(app.includes('$("diag-p"+id)'));
+assert.ok(css.includes(".measurement-groups"));assert.ok(css.includes(".injection-fields"));assert.ok(css.includes(".branches.two-branches"));
+assert.ok(css.includes(".single-line-svg"));assert.ok(css.includes(".schematic-grid"));assert.ok(css.includes(".diagram-summary"));
+const manifest=JSON.parse(fs.readFileSync(path.join(root,"manifest.webmanifest"),"utf8"));assert.equal(manifest.display,"standalone");assert.equal(manifest.start_url,"./");assert.equal(manifest.short_name,"REÓSTATO UNI");
+console.log("Pruebas de la aplicación de dos inyecciones: correctas");

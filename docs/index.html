@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#05080d">
+  <meta name="description" content="Cálculo de dos resistencias mediante inyecciones independientes y regulación con una sola alimentación.">
+  <title>REÓSTATO · 1 nodo · diagrama unifilar</title>
+  <link rel="manifest" href="manifest.webmanifest"><link rel="icon" type="image/svg+xml" href="favicon.svg"><link rel="apple-touch-icon" href="icon-192.svg"><link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar"><div class="brand"><div class="brand-mark" aria-hidden="true">R</div><div><h1>REÓSTATO UNIFILAR</h1><p>1 nodo · 2 ramas · 2 inyecciones de campo</p></div></div><div class="system-state" aria-live="polite"><div><span>Corriente total</span><strong id="head-current">— A</strong></div><div class="health"><i id="health-dot"></i><strong id="health-label">Sin calibrar</strong></div></div></header>
+  <main>
+    <section class="workflow-card" id="calibration">
+      <div class="section-title"><div class="step-label"><span class="step-number">1</span><span>MEDICIONES DE CAMPO</span></div><h2>Calcular resistencias del sistema</h2><p>Cada inyección alimenta una rama con su reóstato en 0 Ω.</p></div>
+      <div class="measurement-groups">
+        <article class="measurement-card side-a"><div class="measurement-head"><div><span>INYECCIÓN A</span><strong>Rama 11</strong></div><b>VA</b></div><div class="field-grid injection-fields"><label>Voltaje VA<input id="nom-va" type="number" min="0.001" step="0.01" value="24"><em>V</em></label><label>RcA<input id="rca" type="number" min="0" step="0.01" value="0.4"><em>Ω</em></label><label class="tone-11">Corriente I11<input id="nom-i11" type="number" min="0.001" step="0.01" value="1.2"><em>A</em></label></div></article>
+        <article class="measurement-card side-b"><div class="measurement-head"><div><span>INYECCIÓN B</span><strong>Rama 12</strong></div><b>VB</b></div><div class="field-grid injection-fields"><label>Voltaje VB<input id="nom-vb" type="number" min="0.001" step="0.01" value="24"><em>V</em></label><label>RcB<input id="rcb" type="number" min="0" step="0.01" value="0.4"><em>Ω</em></label><label class="tone-12">Corriente I12<input id="nom-i12" type="number" min="0.001" step="0.01" value="1.0"><em>A</em></label></div></article>
+      </div>
+      <div class="calibration-footer"><div class="fixed-values single-fixed"><div><span>R11</span><strong id="fixed-r11">— Ω</strong></div><div><span>R12</span><strong id="fixed-r12">— Ω</strong></div><div class="nodes"><span>Tensiones efectivas de campo</span><strong id="fixed-nodes">—</strong></div></div><button class="primary" id="calculate-fixed">Calcular resistencias</button></div>
+      <div id="message" class="message" role="status" aria-live="polite"></div>
+    </section>
+
+    <section class="regulation" id="regulation">
+      <div class="regulation-head"><div class="section-title"><div class="step-label"><span class="step-number">2</span><span>REGULACIÓN</span></div><h2>Ajustar corrientes</h2><p>Una sola inyección alimenta las dos ramas en paralelo.</p></div><div class="operation-controls"><div class="voltage-control"><label>Voltaje de trabajo<input id="live-v" type="number" min="0" max="1000" step="0.01" value="24"><em>V</em></label><output id="live-v-out">24,00 V</output></div><label class="operation-cable">Rc1 de regulación<input id="live-rc1" type="number" min="0" step="0.01" value="0.4"><em>Ω</em></label></div></div>
+      <div class="branches two-branches" id="branch-cards"></div>
+      <div class="action-bar"><button class="primary" id="assist">Calcular ajuste de reóstatos</button><button class="secondary" id="reset-rheostats">Poner reóstatos en 0 Ω</button><details class="more-actions"><summary>Más opciones</summary><div><label>Reóstato máximo<input id="reo-max" type="number" min="0.01" step="1" value="100"><em>Ω</em></label><label>Tolerancia<input id="tolerance" type="number" min="0.01" max="100" step="0.1" value="2"><em>%</em></label><button class="secondary" id="save-case">Exportar caso</button><button class="secondary" id="load-case">Importar caso</button><button class="secondary" id="print-report">Imprimir informe</button><button class="secondary" id="install-app" hidden>Instalar aplicación</button></div></details><input id="case-file" type="file" accept="application/json,.json" hidden></div>
+    </section>
+
+    <section class="diagram-section" id="single-line-diagram">
+      <div class="section-title"><div class="step-label"><span class="step-number">3</span><span>DIAGRAMA UNIFILAR</span></div><h2>Circuito de regulación</h2><p>Representación actualizada con los valores calculados en Regulación.</p></div>
+      <div class="diagram-shell">
+        <svg class="single-line-svg schematic-svg" viewBox="0 0 1100 600" role="img" aria-labelledby="diagram-title diagram-description">
+          <title id="diagram-title">Diagrama unifilar del circuito de regulación</title>
+          <desc id="diagram-description">Fuente de corriente continua, resistencia de cable Rc1 y dos ramas paralelas formadas por R11 más Reo11 y R12 más Reo12.</desc>
+          <defs>
+            <pattern id="minor-grid" width="28" height="28" patternUnits="userSpaceOnUse"><path d="M28 0H0V28" fill="none" stroke="#192238" stroke-width="1"/></pattern>
+            <marker id="arrow-total" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto"><path d="M0 0 10 5 0 10z" fill="#ff9f0a"/></marker>
+            <marker id="arrow-11" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0 0 10 5 0 10z" fill="#32ade6"/></marker>
+            <marker id="arrow-12" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0 0 10 5 0 10z" fill="#30d158"/></marker>
+            <marker id="rheo-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="3.5" markerHeight="3.5" orient="auto"><path d="M0 0 10 5 0 10z" fill="#f5f5f7"/></marker>
+          </defs>
+          <rect class="schematic-background" width="1100" height="600" rx="20"/><rect class="schematic-grid" width="1100" height="600" rx="20"/>
+
+          <path class="schematic-wire bus-top" d="M150 105H250M370 105H1020"/><path class="schematic-wire bus-return" d="M150 500H1020"/>
+          <circle class="junction source-junction" cx="150" cy="105" r="8"/><circle class="junction source-junction" cx="150" cy="500" r="8"/>
+          <path class="schematic-wire" d="M150 105V246M150 326V500"/>
+          <path class="battery-plate positive-plate" d="M102 246H198"/><path class="battery-plate negative-plate" d="M120 286H180"/>
+          <path class="schematic-wire battery-link" d="M150 286V326"/>
+          <text class="polarity plus" x="96" y="238">+</text><text class="polarity minus" x="103" y="332">−</text>
+          <rect class="value-box source-box" x="22" y="263" width="104" height="52" rx="8"/><text class="schematic-value source-text" id="diag-v" x="74" y="296" text-anchor="middle">— V</text>
+
+          <path class="schematic-resistor cable-zigzag" d="M250 105l14-14 20 28 20-28 20 28 20-28 26 14"/>
+          <rect class="value-box cable-box" x="252" y="138" width="116" height="58" rx="8"/><text class="schematic-label" x="310" y="160" text-anchor="middle">Rc1</text><text class="schematic-value small-value" id="diag-rc1" x="310" y="183" text-anchor="middle">— Ω</text>
+          <text class="schematic-note" id="diag-dv1" x="310" y="218" text-anchor="middle">ΔV — V</text>
+          <path class="current-line current-total" d="M190 55H365" marker-end="url(#arrow-total)"/><text class="schematic-current current-total-text" id="diag-it" x="278" y="40" text-anchor="middle">It — A</text>
+
+          <circle class="junction node-junction" cx="430" cy="105" r="8"/><text class="schematic-label node-label" x="430" y="83" text-anchor="middle">NODO 1</text>
+          <rect class="value-box node-box" x="384" y="126" width="92" height="46" rx="8"/><text class="schematic-value node-text" id="diag-v1" x="430" y="155" text-anchor="middle">— V</text>
+
+          <circle class="junction branch-11-junction" cx="650" cy="105" r="8"/><path class="schematic-wire branch-line" d="M650 105V153M650 257V302M650 424V500"/>
+          <path class="current-line current-11" d="M686 116V205" marker-end="url(#arrow-11)"/><text class="schematic-current current-11-text" id="diag-i11" x="720" y="137">I11 — A</text>
+          <path class="schematic-resistor resistor-11" d="M650 153l-15 14 30 18-30 18 30 18-30 18 15 18"/>
+          <rect class="value-box label-box r11-box" x="486" y="182" width="135" height="48" rx="8"/><text class="schematic-label" x="500" y="203">R11:</text><text class="schematic-value inline-value" id="diag-r11" x="606" y="212" text-anchor="end">— Ω</text>
+          <path class="schematic-resistor resistor-11" d="M650 302l-15 14 30 18-30 18 30 18-30 18 15 36"/>
+          <path class="rheostat-pointer" d="M608 408l72-94" marker-end="url(#rheo-arrow)"/>
+          <rect class="value-box rheo-box reo11-box" x="458" y="341" width="164" height="52" rx="8"/><text class="schematic-label" x="470" y="364">Reo11:</text><text class="schematic-value inline-value" id="diag-reo11" x="608" y="374" text-anchor="end">— Ω</text>
+          <text class="schematic-note power-note" id="diag-p11" x="650" y="462" text-anchor="middle">0.00 W</text>
+
+          <circle class="junction branch-12-junction" cx="930" cy="105" r="8"/><path class="schematic-wire branch-line" d="M930 105V153M930 257V302M930 424V500"/>
+          <path class="current-line current-12" d="M966 116V205" marker-end="url(#arrow-12)"/><text class="schematic-current current-12-text" id="diag-i12" x="994" y="137">I12 — A</text>
+          <path class="schematic-resistor resistor-12" d="M930 153l-15 14 30 18-30 18 30 18-30 18 15 18"/>
+          <rect class="value-box label-box r12-box" x="766" y="182" width="135" height="48" rx="8"/><text class="schematic-label" x="780" y="203">R12:</text><text class="schematic-value inline-value" id="diag-r12" x="886" y="212" text-anchor="end">— Ω</text>
+          <path class="schematic-resistor resistor-12" d="M930 302l-15 14 30 18-30 18 30 18-30 18 15 36"/>
+          <path class="rheostat-pointer" d="M888 408l72-94" marker-end="url(#rheo-arrow)"/>
+          <rect class="value-box rheo-box reo12-box" x="738" y="341" width="164" height="52" rx="8"/><text class="schematic-label" x="750" y="364">Reo12:</text><text class="schematic-value inline-value" id="diag-reo12" x="888" y="374" text-anchor="end">— Ω</text>
+          <text class="schematic-note power-note" id="diag-p12" x="930" y="462" text-anchor="middle">0.00 W</text>
+
+          <path class="ground-symbol" d="M650 500v20m-22 0h44m-33 10h22m-14 10h6"/><text class="return-label" x="650" y="570" text-anchor="middle">NODO COMÚN INFERIOR · RETORNO</text>
+        </svg>
+        <div class="diagram-summary" aria-label="Resumen del diagrama"><div><span>Fuente</span><strong id="diag-card-v">— V</strong></div><div><span>Corriente total</span><strong id="diag-card-it">— A</strong></div><div><span>Tensión del nodo</span><strong id="diag-card-v1">— V</strong></div><div><span>Potencia en Rc1</span><strong id="diag-card-pc">— W</strong></div></div>
+      </div>
+    </section>
+
+    <section class="summary-panel" id="results"><div class="summary-title"><span>RESULTADO OPERATIVO</span><h2>Estado del nodo</h2></div><div class="result-grid"><div><span>I total</span><strong id="res-it">— A</strong></div><div><span>Tensión nodo 1</span><strong id="res-v1">— V</strong></div><div><span>Caída Rc1</span><strong id="res-dv1">— V</strong></div><div><span>Potencia fuente</span><strong id="res-ps">— W</strong></div></div><details class="technical-details"><summary>Detalles eléctricos</summary><div class="power-row"><div><span>Potencia disipada</span><strong id="res-pd">— W</strong></div><div><span>Error de potencia</span><strong id="res-pe">— W</strong></div></div><div class="table-wrap"><table><thead><tr><th>Rama</th><th>Corriente</th><th>Objetivo</th><th>Desviación</th><th>R sistema</th><th>Reóstato</th><th>Potencia rama</th></tr></thead><tbody id="results-body"></tbody></table></div><div class="checks" id="checks"></div></details></section>
+  </main>
+  <script src="model.js"></script><script src="app.js"></script>
+</body>
+</html>
